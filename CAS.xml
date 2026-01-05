@@ -3,10 +3,11 @@
 <nta>
 	<declaration>// Place global declarations here.
 // Simple channels for the car
-broadcast chan open, close, lock, unlock;
+broadcast chan open, unlock;
+chan close, lock ;
 
 // Communication channel for the alarm
-chan arm;</declaration>
+chan arm, silent;</declaration>
 	<template>
 		<name>Alarm</name>
 		<declaration>clock t;</declaration>
@@ -14,7 +15,7 @@ chan arm;</declaration>
 			<name x="-229" y="-51">Armed</name>
 		</location>
 		<location id="id1" x="-331" y="-17">
-			<name x="-365" y="-8">Idle</name>
+			<name x="-374" y="-8">Idle</name>
 		</location>
 		<location id="id2" x="-59" y="-17">
 			<name x="-110" y="-8">FlashAndSound</name>
@@ -24,61 +25,48 @@ chan arm;</declaration>
 			<name x="51" y="-8">Flash</name>
 			<label kind="invariant" x="34" y="8">t &lt;= 300</label>
 		</location>
-		<location id="id4" x="212" y="-17">
-			<name x="221" y="-42">SilentAndOpen</name>
-		</location>
 		<init ref="id1"/>
-		<transition id="id5">
-			<source ref="id4"/>
+		<transition id="id4">
+			<source ref="id3"/>
 			<target ref="id1"/>
-			<label kind="synchronisation" x="144" y="-119">unlock?</label>
-			<nail x="212" y="-102"/>
-			<nail x="-280" y="-102"/>
+			<label kind="guard" x="144" y="-17">t == 300</label>
+			<label kind="synchronisation" x="144" y="0">silent!</label>
+			<nail x="136" y="-17"/>
+			<nail x="136" y="68"/>
+			<nail x="-331" y="68"/>
 		</transition>
-		<transition id="id6">
+		<transition id="id5">
 			<source ref="id3"/>
 			<target ref="id1"/>
 			<label kind="synchronisation" x="8" y="-102">unlock?</label>
 			<nail x="76" y="-85"/>
 			<nail x="-280" y="-85"/>
 		</transition>
-		<transition id="id7">
+		<transition id="id6">
 			<source ref="id2"/>
 			<target ref="id1"/>
 			<label kind="synchronisation" x="-127" y="-85">unlock?</label>
 			<nail x="-59" y="-68"/>
 			<nail x="-280" y="-68"/>
 		</transition>
-		<transition id="id8">
+		<transition id="id7">
 			<source ref="id0"/>
 			<target ref="id1"/>
 			<label kind="synchronisation" x="-297" y="-42">unlock?</label>
 			<nail x="-272" y="-25"/>
 		</transition>
-		<transition id="id9">
-			<source ref="id4"/>
-			<target ref="id0"/>
-			<label kind="synchronisation" x="17" y="42">close?</label>
-			<nail x="178" y="34"/>
-			<nail x="-170" y="34"/>
-		</transition>
-		<transition id="id10">
-			<source ref="id3"/>
-			<target ref="id4"/>
-			<label kind="guard" x="110" y="-34">t == 300</label>
-		</transition>
-		<transition id="id11">
+		<transition id="id8">
 			<source ref="id1"/>
 			<target ref="id0"/>
 			<label kind="synchronisation" x="-289" y="-8">arm?</label>
 			<nail x="-272" y="-8"/>
 		</transition>
-		<transition id="id12">
+		<transition id="id9">
 			<source ref="id2"/>
 			<target ref="id3"/>
 			<label kind="guard" x="-17" y="-42">t == 30</label>
 		</transition>
-		<transition id="id13">
+		<transition id="id10">
 			<source ref="id0"/>
 			<target ref="id2"/>
 			<label kind="synchronisation" x="-153" y="-34">open?</label>
@@ -87,34 +75,34 @@ chan arm;</declaration>
 	</template>
 	<template>
 		<name>User</name>
-		<location id="id14" x="-93" y="-25">
+		<location id="id11" x="-93" y="-25">
 			<name x="-85" y="-17">Idle</name>
 		</location>
-		<init ref="id14"/>
-		<transition id="id15">
-			<source ref="id14"/>
-			<target ref="id14"/>
+		<init ref="id11"/>
+		<transition id="id12">
+			<source ref="id11"/>
+			<target ref="id11"/>
 			<label kind="synchronisation" x="-178" y="-25">close!</label>
 			<nail x="-144" y="-17"/>
 			<nail x="-144" y="-34"/>
 		</transition>
-		<transition id="id16">
-			<source ref="id14"/>
-			<target ref="id14"/>
+		<transition id="id13">
+			<source ref="id11"/>
+			<target ref="id11"/>
 			<label kind="synchronisation" x="-110" y="25">open!</label>
 			<nail x="-85" y="25"/>
 			<nail x="-102" y="25"/>
 		</transition>
-		<transition id="id17">
-			<source ref="id14"/>
-			<target ref="id14"/>
+		<transition id="id14">
+			<source ref="id11"/>
+			<target ref="id11"/>
 			<label kind="synchronisation" x="-42" y="-42">lock!</label>
 			<nail x="-42" y="-34"/>
 			<nail x="-42" y="-17"/>
 		</transition>
-		<transition id="id18">
-			<source ref="id14"/>
-			<target ref="id14"/>
+		<transition id="id15">
+			<source ref="id11"/>
+			<target ref="id11"/>
 			<label kind="synchronisation" x="-119" y="-93">unlock!</label>
 			<nail x="-85" y="-76"/>
 			<nail x="-102" y="-76"/>
@@ -124,94 +112,115 @@ chan arm;</declaration>
 		<name x="5" y="5">Car</name>
 		<declaration>// Place local declarations here.
 clock t;</declaration>
-		<location id="id19" x="-399" y="-152">
+		<location id="id16" x="-399" y="-152">
 			<name x="-535" y="-186">OpenAndUnlocked</name>
 		</location>
-		<location id="id20" x="-399" y="-59">
+		<location id="id17" x="-399" y="-59">
 			<name x="-510" y="-50">OpenAndLocked</name>
 		</location>
-		<location id="id21" x="-229" y="-152">
+		<location id="id18" x="-229" y="-152">
 			<name x="-229" y="-186">ClosedAndUnlocked</name>
 		</location>
-		<location id="id22" x="-229" y="-59">
+		<location id="id19" x="-229" y="-59">
 			<name x="-229" y="-50">ClosedAndLocked</name>
 			<label kind="invariant" x="-204" y="-34">t &lt;= 20</label>
 		</location>
-		<location id="id23" x="-110" y="-110">
+		<location id="id20" x="-51" y="-110">
 		</location>
-		<location id="id24" x="51" y="-110">
+		<location id="id21" x="161" y="-110">
 		</location>
-		<init ref="id19"/>
+		<location id="id22" x="161" y="-34">
+			<name x="127" y="-25">SilentAndOpen</name>
+		</location>
+		<init ref="id16"/>
+		<transition id="id23">
+			<source ref="id22"/>
+			<target ref="id20"/>
+			<label kind="synchronisation" x="-33" y="-89">arm!</label>
+		</transition>
+		<transition id="id24">
+			<source ref="id22"/>
+			<target ref="id16"/>
+			<label kind="synchronisation" x="263" y="-59">unlock?</label>
+			<nail x="255" y="-34"/>
+			<nail x="246" y="-263"/>
+			<nail x="-399" y="-246"/>
+		</transition>
 		<transition id="id25">
-			<source ref="id24"/>
-			<target ref="id19"/>
+			<source ref="id21"/>
+			<target ref="id22"/>
+			<label kind="synchronisation" x="170" y="-85">silent?</label>
+		</transition>
+		<transition id="id26">
+			<source ref="id21"/>
+			<target ref="id16"/>
 			<label kind="synchronisation" x="-85" y="-221">unlock?</label>
 			<nail x="51" y="-204"/>
 			<nail x="-399" y="-204"/>
 		</transition>
-		<transition id="id26">
-			<source ref="id23"/>
-			<target ref="id24"/>
-			<label kind="synchronisation" x="-85" y="-127">open?</label>
-		</transition>
 		<transition id="id27">
-			<source ref="id23"/>
+			<source ref="id20"/>
 			<target ref="id21"/>
-			<label kind="synchronisation" x="-161" y="-144">unlock?</label>
+			<label kind="synchronisation" x="42" y="-136">open?</label>
 		</transition>
 		<transition id="id28">
-			<source ref="id22"/>
-			<target ref="id23"/>
-			<label kind="guard" x="-153" y="-93">t == 20</label>
-			<label kind="synchronisation" x="-153" y="-84">arm!</label>
+			<source ref="id20"/>
+			<target ref="id18"/>
+			<label kind="synchronisation" x="-136" y="-144">unlock?</label>
 		</transition>
 		<transition id="id29">
-			<source ref="id22"/>
-			<target ref="id21"/>
+			<source ref="id19"/>
+			<target ref="id20"/>
+			<label kind="guard" x="-127" y="-94">t == 20</label>
+			<label kind="synchronisation" x="-127" y="-85">arm!</label>
+		</transition>
+		<transition id="id30">
+			<source ref="id19"/>
+			<target ref="id18"/>
 			<label kind="synchronisation" x="-297" y="-119">unlock?</label>
 			<nail x="-238" y="-110"/>
 		</transition>
-		<transition id="id30">
-			<source ref="id21"/>
-			<target ref="id22"/>
+		<transition id="id31">
+			<source ref="id18"/>
+			<target ref="id19"/>
 			<label kind="synchronisation" x="-221" y="-119">lock?</label>
 			<label kind="assignment" x="-221" y="-110">t = 0</label>
 			<nail x="-221" y="-110"/>
 		</transition>
-		<transition id="id31">
-			<source ref="id21"/>
-			<target ref="id19"/>
+		<transition id="id32">
+			<source ref="id18"/>
+			<target ref="id16"/>
 			<label kind="synchronisation" x="-331" y="-144">open?</label>
 			<nail x="-306" y="-144"/>
 		</transition>
-		<transition id="id32">
-			<source ref="id19"/>
-			<target ref="id21"/>
+		<transition id="id33">
+			<source ref="id16"/>
+			<target ref="id18"/>
 			<label kind="synchronisation" x="-331" y="-178">close?</label>
 			<nail x="-306" y="-161"/>
 		</transition>
-		<transition id="id33">
-			<source ref="id22"/>
-			<target ref="id20"/>
+		<transition id="id34">
+			<source ref="id19"/>
+			<target ref="id17"/>
 			<label kind="synchronisation" x="-331" y="-84">open?</label>
 			<nail x="-314" y="-67"/>
 		</transition>
-		<transition id="id34">
-			<source ref="id20"/>
-			<target ref="id22"/>
+		<transition id="id35">
+			<source ref="id17"/>
+			<target ref="id19"/>
 			<label kind="synchronisation" x="-340" y="-50">close?</label>
 			<label kind="assignment" x="-340" y="-34">t = 0</label>
 			<nail x="-314" y="-50"/>
 		</transition>
-		<transition id="id35">
-			<source ref="id19"/>
-			<target ref="id20"/>
+		<transition id="id36">
+			<source ref="id16"/>
+			<target ref="id17"/>
 			<label kind="synchronisation" x="-382" y="-118">lock?</label>
 			<nail x="-391" y="-110"/>
 		</transition>
-		<transition id="id36">
-			<source ref="id20"/>
-			<target ref="id19"/>
+		<transition id="id37">
+			<source ref="id17"/>
+			<target ref="id16"/>
 			<label kind="synchronisation" x="-476" y="-118">unlock?</label>
 			<nail x="-408" y="-110"/>
 		</transition>
@@ -226,79 +235,73 @@ system car, alarm, user;</system>
 		<query>
 			<formula>E&lt;&gt; car.OpenAndLocked</formula>
 			<comment/>
-			<result outcome="success" type="quality" timestamp="2026-01-05 21:11:07 +0100">
+			<result outcome="success" type="quality" timestamp="2026-01-05 23:22:44 +0100">
 			</result>
 		</query>
 		<query>
 			<formula>E&lt;&gt; car.OpenAndUnlocked</formula>
 			<comment/>
-			<result outcome="success" type="quality" timestamp="2026-01-05 21:11:07 +0100">
+			<result outcome="success" type="quality" timestamp="2026-01-05 23:22:44 +0100">
 			</result>
 		</query>
 		<query>
 			<formula>E&lt;&gt; car.ClosedAndUnlocked</formula>
 			<comment/>
-			<result outcome="success" type="quality" timestamp="2026-01-05 21:11:07 +0100">
+			<result outcome="success" type="quality" timestamp="2026-01-05 23:22:44 +0100">
 			</result>
 		</query>
 		<query>
 			<formula>A[] not deadlock</formula>
 			<comment/>
-			<result outcome="success" type="quality" timestamp="2026-01-05 21:11:07 +0100">
+			<result outcome="success" type="quality" timestamp="2026-01-05 23:22:44 +0100">
 			</result>
 		</query>
 		<query>
 			<formula>E&lt;&gt; car.ClosedAndLocked</formula>
 			<comment/>
-			<result outcome="success" type="quality" timestamp="2026-01-05 21:11:07 +0100">
+			<result outcome="success" type="quality" timestamp="2026-01-05 23:22:44 +0100">
 			</result>
 		</query>
 		<query>
 			<formula>E&lt;&gt; alarm.Armed</formula>
 			<comment/>
-			<result outcome="success" type="quality" timestamp="2026-01-05 21:11:07 +0100">
+			<result outcome="success" type="quality" timestamp="2026-01-05 23:22:44 +0100">
 			</result>
 		</query>
 		<query>
 			<formula>E&lt;&gt; alarm.FlashAndSound</formula>
 			<comment/>
-			<result outcome="success" type="quality" timestamp="2026-01-05 21:11:07 +0100">
+			<result outcome="success" type="quality" timestamp="2026-01-05 23:22:44 +0100">
 			</result>
 		</query>
 		<query>
 			<formula>E&lt;&gt; alarm.Flash</formula>
 			<comment/>
-			<result outcome="success" type="quality" timestamp="2026-01-05 21:11:07 +0100">
+			<result outcome="success" type="quality" timestamp="2026-01-05 23:22:44 +0100">
 			</result>
 		</query>
 		<query>
-			<formula>E&lt;&gt; alarm.SilentAndOpen</formula>
+			<formula>E&lt;&gt; car.SilentAndOpen</formula>
 			<comment/>
-			<result outcome="success" type="quality" timestamp="2026-01-05 21:11:07 +0100">
+			<result outcome="success" type="quality" timestamp="2026-01-05 23:23:01 +0100">
 			</result>
 		</query>
 		<query>
 			<formula>E&lt;&gt; (alarm.FlashAndSound and alarm.t == 30)</formula>
 			<comment/>
-			<result outcome="success" type="quality" timestamp="2026-01-05 21:11:07 +0100">
+			<result outcome="success" type="quality" timestamp="2026-01-05 23:22:44 +0100">
 			</result>
 		</query>
 		<query>
 			<formula>E&lt;&gt; (alarm.Flash and alarm.t == 300)</formula>
 			<comment>Alarm may flash for the full 300 seconds</comment>
-			<result outcome="success" type="quality" timestamp="2026-01-05 21:11:07 +0100">
-			</result>
-		</query>
-		<query>
-			<formula>alarm.FlashAndSound --&gt; car.OpenAndUnlocked</formula>
-			<comment/>
-			<result outcome="failure" type="quality" timestamp="2026-01-05 21:18:36 +0100">
+			<result outcome="success" type="quality" timestamp="2026-01-05 23:22:44 +0100">
 			</result>
 		</query>
 		<query>
 			<formula>A[] alarm.FlashAndSound imply !car.ClosedAndUnlocked</formula>
 			<comment/>
-			<result outcome="success" type="quality" timestamp="2026-01-05 21:12:25 +0100">
+			<result outcome="success" type="quality" timestamp="2026-01-05 23:22:44 +0100">
 			</result>
 		</query>
 	</queries>

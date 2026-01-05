@@ -43,7 +43,7 @@ E<> alarm.Flash
 /*
 
 */
-E<> alarm.SilentAndOpen
+E<> car.SilentAndOpen
 
 /*
 
@@ -54,11 +54,6 @@ E<> (alarm.FlashAndSound and alarm.t == 30)
 Alarm may flash for the full 300 seconds
 */
 E<> (alarm.Flash and alarm.t == 300)
-
-/*
-
-*/
-alarm.FlashAndSound --> car.OpenAndUnlocked
 
 /*
 
