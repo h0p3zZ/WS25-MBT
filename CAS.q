@@ -59,3 +59,13 @@ E<> (alarm.Flash and alarm.t == 300)
 
 */
 A[] alarm.FlashAndSound imply !car.ClosedAndUnlocked
+
+/*
+
+*/
+A[] failedTries <= MAX_TRIES
+
+/*
+
+*/
+A[] (failedTries == 3 && armed) imply !alarm.FlashAndSound
