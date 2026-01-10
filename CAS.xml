@@ -3,9 +3,10 @@
 <nta>
 	<declaration>// Place global declarations here.
 // Simple channels for the car
-broadcast chan open, close, unlock;
-chan lock, intrusion;
+broadcast chan open, close, unlock, intrusion;
+chan lock;
 bool armed;
+bool locked;
 
 // Communication channel for the alarm
 chan arm, silent;
@@ -31,13 +32,22 @@ const int MAX_TRIES = 3;</declaration>
 		<transition id="id2">
 			<source ref="id1"/>
 			<target ref="id0"/>
+			<label kind="guard" x="-272" y="-178">enteredPin != storedPin &amp;&amp; failedTries &gt;= MAX_TRIES &amp;&amp; !armed</label>
+			<label kind="synchronisation" x="-272" y="-161">unlockFail!</label>
+			<label kind="assignment" x="-272" y="-144">failedTries = 0</label>
+			<nail x="-34" y="-127"/>
+			<nail x="-289" y="-127"/>
+		</transition>
+		<transition id="id3">
+			<source ref="id1"/>
+			<target ref="id0"/>
 			<label kind="guard" x="-272" y="-110">enteredPin != storedPin &amp;&amp; failedTries&gt;=MAX_TRIES &amp;&amp; armed</label>
 			<label kind="synchronisation" x="-272" y="-93">intrusion!</label>
 			<label kind="assignment" x="-272" y="-76">failedTries = 0</label>
 			<nail x="-34" y="-59"/>
 			<nail x="-289" y="-59"/>
 		</transition>
-		<transition id="id3">
+		<transition id="id4">
 			<source ref="id1"/>
 			<target ref="id0"/>
 			<label kind="guard" x="-272" y="93">enteredPin != storedPin &amp;&amp; failedTries &lt; MAX_TRIES</label>
@@ -46,143 +56,146 @@ const int MAX_TRIES = 3;</declaration>
 			<nail x="-35" y="144"/>
 			<nail x="-290" y="144"/>
 		</transition>
-		<transition id="id4">
+		<transition id="id5">
 			<source ref="id1"/>
 			<target ref="id0"/>
 			<label kind="guard" x="-272" y="17">enteredPin == storedPin</label>
 			<label kind="synchronisation" x="-271" y="34">unlockOk!</label>
-			<label kind="assignment" x="-271" y="51">failedTries = 0</label>
+			<label kind="assignment" x="-271" y="51">failedTries = 0, locked = false</label>
 			<nail x="-34" y="68"/>
 			<nail x="-289" y="68"/>
 		</transition>
-		<transition id="id5">
+		<transition id="id6">
 			<source ref="id0"/>
 			<target ref="id1"/>
+			<label kind="guard" x="-271" y="-42">locked == true</label>
 			<label kind="synchronisation" x="-271" y="-25">unlockPin?</label>
 		</transition>
 	</template>
 	<template>
 		<name>Keypad</name>
 		<parameter>int pin</parameter>
-		<location id="id6" x="-357" y="-76">
+		<location id="id7" x="-357" y="-76">
 			<name x="-408" y="-93">Idle</name>
 		</location>
-		<location id="id7" x="-229" y="-76">
+		<location id="id8" x="-229" y="-76">
 			<name x="-212" y="-93">EnterPinCode</name>
 		</location>
-		<init ref="id6"/>
-		<transition id="id8">
-			<source ref="id7"/>
-			<target ref="id6"/>
+		<init ref="id7"/>
+		<transition id="id9">
+			<source ref="id8"/>
+			<target ref="id7"/>
 			<label kind="synchronisation" x="-339" y="-212">unlockFail?</label>
 			<nail x="-229" y="-195"/>
 			<nail x="-357" y="-195"/>
 		</transition>
-		<transition id="id9">
-			<source ref="id7"/>
-			<target ref="id6"/>
+		<transition id="id10">
+			<source ref="id8"/>
+			<target ref="id7"/>
 			<label kind="synchronisation" x="-339" y="-161">unlockOk?</label>
 			<nail x="-229" y="-144"/>
 			<nail x="-357" y="-144"/>
 		</transition>
-		<transition id="id10">
-			<source ref="id7"/>
-			<target ref="id6"/>
+		<transition id="id11">
+			<source ref="id8"/>
+			<target ref="id7"/>
 			<label kind="synchronisation" x="-339" y="-119">intrusion?</label>
 			<nail x="-229" y="-102"/>
 			<nail x="-357" y="-102"/>
 		</transition>
-		<transition id="id11">
-			<source ref="id6"/>
-			<target ref="id7"/>
-			<label kind="guard" x="-340" y="-42">pin &gt;= PIN_MIN &amp;&amp; pin &lt;=PIN_MAX</label>
-			<label kind="synchronisation" x="-340" y="-76">unlockPin!</label>
-			<label kind="assignment" x="-340" y="-59">enteredPin = pin</label>
+		<transition id="id12">
+			<source ref="id7"/>
+			<target ref="id8"/>
+			<label kind="select" x="-357" y="-59">p: int[1230, 1238]</label>
+			<label kind="guard" x="-357" y="-8">pin &gt;= PIN_MIN &amp;&amp; pin &lt;=PIN_MAX &amp;&amp; locked</label>
+			<label kind="synchronisation" x="-357" y="-42">unlockPin!</label>
+			<label kind="assignment" x="-357" y="-25">pin = p, enteredPin = pin</label>
 		</transition>
 	</template>
 	<template>
 		<name>Alarm</name>
 		<declaration>clock t;</declaration>
-		<location id="id12" x="-212" y="-17">
+		<location id="id13" x="-212" y="-17">
 			<name x="-263" y="-8">Armed</name>
 		</location>
-		<location id="id13" x="-391" y="-17">
+		<location id="id14" x="-391" y="-17">
 			<name x="-434" y="-8">Idle</name>
 		</location>
-		<location id="id14" x="42" y="-17">
+		<location id="id15" x="42" y="-17">
 			<name x="8" y="-8">FlashAndSound</name>
 			<label kind="invariant" x="16" y="8">t &lt;= 30</label>
 		</location>
-		<location id="id15" x="153" y="-17">
+		<location id="id16" x="153" y="-17">
 			<name x="128" y="-8">Flash</name>
 			<label kind="invariant" x="111" y="8">t &lt;= 300</label>
 		</location>
-		<location id="id16" x="272" y="-17">
+		<location id="id17" x="272" y="-17">
 			<name x="289" y="-42">SilentAndOpen</name>
 		</location>
-		<init ref="id13"/>
-		<transition id="id17">
-			<source ref="id16"/>
-			<target ref="id13"/>
+		<init ref="id14"/>
+		<transition id="id18">
+			<source ref="id17"/>
+			<target ref="id14"/>
 			<label kind="synchronisation" x="204" y="-144">unlockOk?</label>
 			<nail x="272" y="-127"/>
 			<nail x="-391" y="-127"/>
 		</transition>
-		<transition id="id18">
-			<source ref="id15"/>
-			<target ref="id13"/>
+		<transition id="id19">
+			<source ref="id16"/>
+			<target ref="id14"/>
 			<label kind="synchronisation" x="85" y="-144">unlockOk?</label>
 			<nail x="153" y="-127"/>
 			<nail x="-391" y="-127"/>
 		</transition>
-		<transition id="id19">
-			<source ref="id12"/>
-			<target ref="id13"/>
+		<transition id="id20">
+			<source ref="id13"/>
+			<target ref="id14"/>
 			<label kind="synchronisation" x="-314" y="-93">unlockOk?</label>
 			<nail x="-212" y="-76"/>
 			<nail x="-391" y="-76"/>
 		</transition>
-		<transition id="id20">
-			<source ref="id14"/>
-			<target ref="id13"/>
+		<transition id="id21">
+			<source ref="id15"/>
+			<target ref="id14"/>
 			<label kind="synchronisation" x="-42" y="-144">unlockOk?</label>
 			<nail x="42" y="-127"/>
 			<nail x="-391" y="-127"/>
 		</transition>
-		<transition id="id21">
-			<source ref="id12"/>
-			<target ref="id14"/>
+		<transition id="id22">
+			<source ref="id13"/>
+			<target ref="id15"/>
 			<label kind="synchronisation" x="-144" y="8">intrusion?</label>
-			<label kind="assignment" x="-187" y="-8">t = 0, armed = true</label>
+			<label kind="assignment" x="-187" y="-8">t = 0, armed = false</label>
 			<nail x="-93" y="-8"/>
 		</transition>
-		<transition id="id22">
-			<source ref="id16"/>
-			<target ref="id12"/>
-			<label kind="synchronisation" x="212" y="51">close?</label>
+		<transition id="id23">
+			<source ref="id17"/>
+			<target ref="id13"/>
+			<label kind="synchronisation" x="212" y="68">close?</label>
+			<label kind="assignment" x="212" y="85">armed = true</label>
 			<nail x="272" y="68"/>
 			<nail x="-212" y="68"/>
 		</transition>
-		<transition id="id23">
-			<source ref="id15"/>
-			<target ref="id16"/>
+		<transition id="id24">
+			<source ref="id16"/>
+			<target ref="id17"/>
 			<label kind="guard" x="178" y="-51">t == 300</label>
 			<label kind="synchronisation" x="178" y="-34">silent!</label>
 		</transition>
-		<transition id="id24">
-			<source ref="id13"/>
-			<target ref="id12"/>
+		<transition id="id25">
+			<source ref="id14"/>
+			<target ref="id13"/>
 			<label kind="synchronisation" x="-331" y="-59">arm?</label>
 			<label kind="assignment" x="-355" y="-42">armed = true</label>
 		</transition>
-		<transition id="id25">
-			<source ref="id14"/>
-			<target ref="id15"/>
+		<transition id="id26">
+			<source ref="id15"/>
+			<target ref="id16"/>
 			<label kind="guard" x="59" y="-34">t == 30</label>
 		</transition>
-		<transition id="id26">
-			<source ref="id12"/>
-			<target ref="id14"/>
+		<transition id="id27">
+			<source ref="id13"/>
+			<target ref="id15"/>
 			<label kind="synchronisation" x="-110" y="-43">open?</label>
 			<label kind="assignment" x="-161" y="-59">t = 0, armed = false</label>
 			<nail x="-93" y="-25"/>
@@ -190,28 +203,29 @@ const int MAX_TRIES = 3;</declaration>
 	</template>
 	<template>
 		<name>User</name>
-		<location id="id27" x="-93" y="-25">
+		<location id="id28" x="-93" y="-25">
 			<name x="-85" y="-17">Idle</name>
 		</location>
-		<init ref="id27"/>
-		<transition id="id28">
-			<source ref="id27"/>
-			<target ref="id27"/>
+		<init ref="id28"/>
+		<transition id="id29">
+			<source ref="id28"/>
+			<target ref="id28"/>
 			<label kind="synchronisation" x="-178" y="-25">close!</label>
 			<nail x="-144" y="-17"/>
 			<nail x="-144" y="-34"/>
 		</transition>
-		<transition id="id29">
-			<source ref="id27"/>
-			<target ref="id27"/>
+		<transition id="id30">
+			<source ref="id28"/>
+			<target ref="id28"/>
 			<label kind="synchronisation" x="-110" y="25">open!</label>
 			<nail x="-85" y="25"/>
 			<nail x="-102" y="25"/>
 		</transition>
-		<transition id="id30">
-			<source ref="id27"/>
-			<target ref="id27"/>
+		<transition id="id31">
+			<source ref="id28"/>
+			<target ref="id28"/>
 			<label kind="synchronisation" x="-42" y="-42">lock!</label>
+			<label kind="assignment" x="8" y="-42">locked = true</label>
 			<nail x="-42" y="-34"/>
 			<nail x="-42" y="-17"/>
 		</transition>
@@ -220,115 +234,115 @@ const int MAX_TRIES = 3;</declaration>
 		<name x="5" y="5">Car</name>
 		<declaration>// Place local declarations here.
 clock t;</declaration>
-		<location id="id31" x="-399" y="-152">
+		<location id="id32" x="-399" y="-152">
 			<name x="-535" y="-186">OpenAndUnlocked</name>
 		</location>
-		<location id="id32" x="-399" y="-59">
+		<location id="id33" x="-399" y="-59">
 			<name x="-510" y="-50">OpenAndLocked</name>
 		</location>
-		<location id="id33" x="-229" y="-152">
+		<location id="id34" x="-229" y="-152">
 			<name x="-229" y="-186">ClosedAndUnlocked</name>
 		</location>
-		<location id="id34" x="-229" y="-59">
+		<location id="id35" x="-229" y="-59">
 			<name x="-229" y="-50">ClosedAndLocked</name>
 			<label kind="invariant" x="-204" y="-34">t &lt;= 20</label>
 		</location>
-		<location id="id35" x="-51" y="-110">
+		<location id="id36" x="-51" y="-110">
 		</location>
-		<location id="id36" x="161" y="-110">
+		<location id="id37" x="161" y="-110">
 		</location>
-		<location id="id37" x="161" y="-34">
+		<location id="id38" x="161" y="-34">
 			<name x="127" y="-25">SilentAndOpen</name>
 		</location>
-		<init ref="id31"/>
-		<transition id="id38">
-			<source ref="id37"/>
-			<target ref="id35"/>
+		<init ref="id32"/>
+		<transition id="id39">
+			<source ref="id38"/>
+			<target ref="id36"/>
 			<label kind="synchronisation" x="-33" y="-89">close?</label>
 		</transition>
-		<transition id="id39">
-			<source ref="id37"/>
-			<target ref="id31"/>
+		<transition id="id40">
+			<source ref="id38"/>
+			<target ref="id32"/>
 			<label kind="synchronisation" x="263" y="-59">unlockOk?</label>
 			<nail x="255" y="-34"/>
 			<nail x="246" y="-263"/>
 			<nail x="-399" y="-246"/>
 		</transition>
-		<transition id="id40">
-			<source ref="id36"/>
-			<target ref="id37"/>
+		<transition id="id41">
+			<source ref="id37"/>
+			<target ref="id38"/>
 			<label kind="synchronisation" x="170" y="-85">silent?</label>
 		</transition>
-		<transition id="id41">
-			<source ref="id36"/>
-			<target ref="id31"/>
+		<transition id="id42">
+			<source ref="id37"/>
+			<target ref="id32"/>
 			<label kind="synchronisation" x="-85" y="-221">unlockOk?</label>
 			<nail x="51" y="-204"/>
 			<nail x="-399" y="-204"/>
 		</transition>
-		<transition id="id42">
-			<source ref="id35"/>
-			<target ref="id36"/>
+		<transition id="id43">
+			<source ref="id36"/>
+			<target ref="id37"/>
 			<label kind="synchronisation" x="42" y="-136">open?</label>
 		</transition>
-		<transition id="id43">
-			<source ref="id35"/>
-			<target ref="id33"/>
+		<transition id="id44">
+			<source ref="id36"/>
+			<target ref="id34"/>
 			<label kind="synchronisation" x="-136" y="-144">unlockOk?</label>
 		</transition>
-		<transition id="id44">
-			<source ref="id34"/>
-			<target ref="id35"/>
+		<transition id="id45">
+			<source ref="id35"/>
+			<target ref="id36"/>
 			<label kind="guard" x="-127" y="-94">t == 20</label>
 			<label kind="synchronisation" x="-127" y="-85">arm!</label>
 		</transition>
-		<transition id="id45">
-			<source ref="id34"/>
-			<target ref="id33"/>
+		<transition id="id46">
+			<source ref="id35"/>
+			<target ref="id34"/>
 			<label kind="synchronisation" x="-314" y="-119">unlockOk?</label>
 			<nail x="-238" y="-110"/>
 		</transition>
-		<transition id="id46">
-			<source ref="id33"/>
-			<target ref="id34"/>
+		<transition id="id47">
+			<source ref="id34"/>
+			<target ref="id35"/>
 			<label kind="synchronisation" x="-221" y="-119">lock?</label>
 			<label kind="assignment" x="-221" y="-110">t = 0</label>
 			<nail x="-221" y="-110"/>
 		</transition>
-		<transition id="id47">
-			<source ref="id33"/>
-			<target ref="id31"/>
+		<transition id="id48">
+			<source ref="id34"/>
+			<target ref="id32"/>
 			<label kind="synchronisation" x="-331" y="-144">open?</label>
 			<nail x="-306" y="-144"/>
 		</transition>
-		<transition id="id48">
-			<source ref="id31"/>
-			<target ref="id33"/>
+		<transition id="id49">
+			<source ref="id32"/>
+			<target ref="id34"/>
 			<label kind="synchronisation" x="-331" y="-178">close?</label>
 			<nail x="-306" y="-161"/>
 		</transition>
-		<transition id="id49">
-			<source ref="id34"/>
-			<target ref="id32"/>
+		<transition id="id50">
+			<source ref="id35"/>
+			<target ref="id33"/>
 			<label kind="synchronisation" x="-331" y="-84">open?</label>
 			<nail x="-314" y="-67"/>
 		</transition>
-		<transition id="id50">
-			<source ref="id32"/>
-			<target ref="id34"/>
+		<transition id="id51">
+			<source ref="id33"/>
+			<target ref="id35"/>
 			<label kind="synchronisation" x="-340" y="-50">close?</label>
 			<label kind="assignment" x="-340" y="-34">t = 0</label>
 			<nail x="-314" y="-50"/>
 		</transition>
-		<transition id="id51">
-			<source ref="id31"/>
-			<target ref="id32"/>
+		<transition id="id52">
+			<source ref="id32"/>
+			<target ref="id33"/>
 			<label kind="synchronisation" x="-382" y="-118">lock?</label>
 			<nail x="-391" y="-110"/>
 		</transition>
-		<transition id="id52">
-			<source ref="id32"/>
-			<target ref="id31"/>
+		<transition id="id53">
+			<source ref="id33"/>
+			<target ref="id32"/>
 			<label kind="synchronisation" x="-493" y="-119">unlockOk?</label>
 			<nail x="-408" y="-110"/>
 		</transition>
@@ -342,30 +356,31 @@ auth = Auth();
 // List one or more processes to be composed into a system.
 system car, alarm, user, keypad, auth;</system>
 	<queries>
-		<option key="--diagnostic" value="0"/>
+		<option key="--diagnostic" value="-1"/>
 		<query>
 			<formula>E&lt;&gt; car.OpenAndLocked</formula>
 			<comment/>
-			<result outcome="success" type="quality" timestamp="2026-01-05 23:22:44 +0100">
+			<result outcome="success" type="quality" timestamp="2026-01-08 09:40:00 +0100">
+				<option key="--diagnostic" value="0"/>
 			</result>
 		</query>
 		<query>
 			<formula>E&lt;&gt; car.OpenAndUnlocked</formula>
 			<comment/>
-			<result outcome="success" type="quality" timestamp="2026-01-05 23:22:44 +0100">
+			<result outcome="success" type="quality" timestamp="2026-01-08 09:40:01 +0100">
+				<option key="--diagnostic" value="0"/>
 			</result>
 		</query>
 		<query>
 			<formula>E&lt;&gt; car.ClosedAndUnlocked</formula>
 			<comment/>
-			<result outcome="success" type="quality" timestamp="2026-01-05 23:22:44 +0100">
+			<result outcome="success" type="quality" timestamp="2026-01-08 09:40:02 +0100">
+				<option key="--diagnostic" value="0"/>
 			</result>
 		</query>
 		<query>
 			<formula>A[] not deadlock</formula>
 			<comment/>
-			<result outcome="success" type="quality" timestamp="2026-01-05 23:22:44 +0100">
-			</result>
 		</query>
 		<query>
 			<formula>E&lt;&gt; car.ClosedAndLocked</formula>
@@ -422,9 +437,10 @@ system car, alarm, user, keypad, auth;</system>
 			</result>
 		</query>
 		<query>
-			<formula>A[] (failedTries == 3 &amp;&amp; armed) imply alarm.FlashAndSound</formula>
+			<formula>E&lt;&gt; keypad.pin != 0</formula>
 			<comment/>
-			<result outcome="failure" type="quality" timestamp="2026-01-07 01:03:05 +0100">
+			<option key="--diagnostic" value="0"/>
+			<result outcome="success" type="quality" timestamp="2026-01-08 09:31:43 +0100">
 				<option key="--diagnostic" value="0"/>
 			</result>
 		</query>

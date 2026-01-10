@@ -68,4 +68,4 @@ A[] failedTries <= MAX_TRIES
 /*
 
 */
-A[] (failedTries == 3 && armed) imply !alarm.FlashAndSound
+E<> keypad.pin != 0
