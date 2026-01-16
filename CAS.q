@@ -58,14 +58,34 @@ E<> (alarm.Flash and alarm.t == 300)
 /*
 
 */
-A[] alarm.FlashAndSound imply !car.ClosedAndUnlocked
-
-/*
-
-*/
 A[] failedTries <= MAX_TRIES
 
 /*
 
 */
-E<> keypad.pin != 0
+E<> enteredPin != 0
+
+/*
+
+*/
+A[] enteredPin >= 0 && enteredPin <= 9999
+
+/*
+Pin is at some point equal to 1234 (default value)
+*/
+E<> enteredPin == 1234
+
+/*
+Pin is at some point different from 1234 (default value)
+*/
+E<> enteredPin != 1234
+
+/*
+
+*/
+E<> enteredPin == storedPin
+
+/*
+
+*/
+E<> armed && luggage.OpenAndArmed

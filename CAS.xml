@@ -31,26 +31,136 @@ const int NR_DOORS = 4;
 bool doorClosed[NR_DOORS];
 bool carClosed = false;
 
-broadcast chan openDoor[NR_DOORS], closeDoor[NR_DOORS];</declaration>
+broadcast chan openDoor[NR_DOORS], closeDoor[NR_DOORS];
+
+bool bonnetClosed, luggageClosed;
+chan openBonnet, closeBonnet, openLuggage, closeLuggage;
+chan unlockLuggage, lockLuggage;</declaration>
 	<template>
-		<name>DoorSystem</name>
-		<location id="id0" x="-272" y="-34">
-			<name x="-323" y="-42">Open</name>
+		<name>LuggageCompartment</name>
+		<location id="id0" x="-255" y="-17">
+			<name x="-306" y="-25">Open</name>
 		</location>
-		<location id="id1" x="-59" y="-34">
-			<name x="-42" y="-34">Closed</name>
+		<location id="id1" x="-17" y="-17">
+			<name x="-42" y="-8">Closed</name>
+		</location>
+		<location id="id2" x="187" y="-17">
+			<name x="195" y="-42">ClosedAndArmed</name>
+		</location>
+		<location id="id3" x="187" y="59">
+			<name x="195" y="68">OpenAndArmed</name>
 		</location>
 		<init ref="id0"/>
-		<transition id="id2">
+		<transition id="id4">
+			<source ref="id2"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="59" y="-93">unlockOk?</label>
+			<nail x="187" y="-76"/>
+			<nail x="-17" y="-76"/>
+		</transition>
+		<transition id="id5">
+			<source ref="id2"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="42" y="-8">lockLuggage?</label>
+			<nail x="85" y="-8"/>
+		</transition>
+		<transition id="id6">
+			<source ref="id3"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="-85" y="59">unlockOk?</label>
+			<nail x="-255" y="59"/>
+		</transition>
+		<transition id="id7">
+			<source ref="id3"/>
+			<target ref="id2"/>
+			<label kind="synchronisation" x="204" y="8">closeLuggage?</label>
+			<nail x="204" y="17"/>
+		</transition>
+		<transition id="id8">
+			<source ref="id2"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="76" y="17">openLuggage?</label>
+			<nail x="170" y="17"/>
+		</transition>
+		<transition id="id9">
+			<source ref="id1"/>
+			<target ref="id2"/>
+			<label kind="guard" x="34" y="-59">armed</label>
+			<label kind="synchronisation" x="34" y="-42">unlockLuggage?</label>
+			<nail x="85" y="-25"/>
+		</transition>
+		<transition id="id10">
 			<source ref="id1"/>
 			<target ref="id0"/>
+			<label kind="synchronisation" x="-178" y="-8">openLuggage?</label>
+			<label kind="assignment" x="-178" y="8">luggageClosed = false,
+carClosed = false</label>
+			<nail x="-136" y="-8"/>
+		</transition>
+		<transition id="id11">
+			<source ref="id0"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="-212" y="-204">closeLuggage?</label>
+			<label kind="assignment" x="-212" y="-187">luggageClosed = true,
+carClosed = doorClosed[0]
+&amp;&amp; doorClosed[1]
+&amp;&amp; doorClosed[2]
+&amp;&amp; doorClosed[3]
+&amp;&amp; bonnetClosed
+&amp;&amp; luggageClosed</label>
+			<nail x="-136" y="-34"/>
+		</transition>
+	</template>
+	<template>
+		<name>Bonnet</name>
+		<location id="id12" x="-246" y="-25">
+			<name x="-297" y="-25">Open</name>
+		</location>
+		<location id="id13" x="-34" y="-25">
+			<name x="-25" y="-17">Closed</name>
+		</location>
+		<init ref="id12"/>
+		<transition id="id14">
+			<source ref="id13"/>
+			<target ref="id12"/>
+			<label kind="synchronisation" x="-170" y="-9">openBonnet?</label>
+			<label kind="assignment" x="-170" y="8">bonnetClosed = false,
+carClosed = false</label>
+			<nail x="-136" y="-8"/>
+		</transition>
+		<transition id="id15">
+			<source ref="id12"/>
+			<target ref="id13"/>
+			<label kind="synchronisation" x="-212" y="-204">closeBonnet?</label>
+			<label kind="assignment" x="-212" y="-187">bonnetClosed = true,
+carClosed = doorClosed[0] 
+&amp;&amp; doorClosed[1]
+&amp;&amp; doorClosed[2]
+&amp;&amp; doorClosed[3]
+&amp;&amp; bonnetClosed
+&amp;&amp; luggageClosed</label>
+			<nail x="-144" y="-42"/>
+		</transition>
+	</template>
+	<template>
+		<name>DoorSystem</name>
+		<location id="id16" x="-272" y="-34">
+			<name x="-323" y="-42">Open</name>
+		</location>
+		<location id="id17" x="-59" y="-34">
+			<name x="-42" y="-34">Closed</name>
+		</location>
+		<init ref="id16"/>
+		<transition id="id18">
+			<source ref="id17"/>
+			<target ref="id16"/>
 			<label kind="guard" x="-153" y="-85">!carClosed</label>
 			<label kind="synchronisation" x="-153" y="-68">open!</label>
 			<nail x="-170" y="-51"/>
 		</transition>
-		<transition id="id3">
-			<source ref="id0"/>
-			<target ref="id1"/>
+		<transition id="id19">
+			<source ref="id16"/>
+			<target ref="id17"/>
 			<label kind="guard" x="-204" y="-17">carClosed</label>
 			<label kind="synchronisation" x="-204" y="0">close!</label>
 			<nail x="-170" y="-17"/>
@@ -59,142 +169,143 @@ broadcast chan openDoor[NR_DOORS], closeDoor[NR_DOORS];</declaration>
 	<template>
 		<name>Door</name>
 		<parameter>int id</parameter>
-		<location id="id4" x="-229" y="-17">
+		<location id="id20" x="-229" y="-17">
 			<name x="-272" y="-51">Open</name>
 		</location>
-		<location id="id5" x="25" y="-17">
+		<location id="id21" x="25" y="-17">
 			<name x="15" y="-51">Closed</name>
 		</location>
-		<init ref="id4"/>
-		<transition id="id6">
-			<source ref="id5"/>
-			<target ref="id4"/>
+		<init ref="id20"/>
+		<transition id="id22">
+			<source ref="id21"/>
+			<target ref="id20"/>
 			<label kind="synchronisation" x="-119" y="17">openDoor[id]?</label>
 			<label kind="assignment" x="-119" y="34">doorClosed[id]=false,
 carClosed=false</label>
 			<nail x="-102" y="17"/>
 		</transition>
-		<transition id="id7">
-			<source ref="id4"/>
-			<target ref="id5"/>
-			<label kind="synchronisation" x="-238" y="-136">closeDoor[id]?</label>
-			<label kind="assignment" x="-238" y="-119">doorClosed[id]=true,
+		<transition id="id23">
+			<source ref="id20"/>
+			<target ref="id21"/>
+			<label kind="synchronisation" x="-238" y="-144">closeDoor[id]?</label>
+			<label kind="assignment" x="-238" y="-127">doorClosed[id]=true,
 carClosed = doorClosed[0] &amp;&amp; doorClosed[1]
-&amp;&amp; doorClosed[2] &amp;&amp; doorClosed[3]</label>
+&amp;&amp; doorClosed[2] &amp;&amp; doorClosed[3]
+&amp;&amp; bonnetClosed &amp;&amp; luggageClosed</label>
 			<nail x="-102" y="-51"/>
 		</transition>
 	</template>
 	<template>
 		<name>Auth</name>
-		<location id="id8" x="-289" y="-8">
+		<location id="id24" x="-289" y="-8">
 			<name x="-340" y="-25">Idle</name>
 		</location>
-		<location id="id9" x="-34" y="-8">
+		<location id="id25" x="-34" y="-8">
 			<name x="-25" y="-34">CheckPin</name>
 		</location>
-		<init ref="id8"/>
-		<transition id="id10">
-			<source ref="id9"/>
-			<target ref="id8"/>
+		<init ref="id24"/>
+		<transition id="id26">
+			<source ref="id25"/>
+			<target ref="id24"/>
 			<label kind="guard" x="-272" y="-178">enteredPin != storedPin &amp;&amp; failedTries &gt;= MAX_TRIES &amp;&amp; !(armed || reassign)</label>
 			<label kind="synchronisation" x="-272" y="-161">unlockFail!</label>
 			<label kind="assignment" x="-272" y="-144">failedTries = 0</label>
 			<nail x="-34" y="-127"/>
 			<nail x="-289" y="-127"/>
 		</transition>
-		<transition id="id11">
-			<source ref="id9"/>
-			<target ref="id8"/>
+		<transition id="id27">
+			<source ref="id25"/>
+			<target ref="id24"/>
 			<label kind="guard" x="-272" y="-110">enteredPin != storedPin &amp;&amp; failedTries&gt;=MAX_TRIES &amp;&amp; (armed || reassign)</label>
 			<label kind="synchronisation" x="-272" y="-93">intrusion!</label>
 			<label kind="assignment" x="-272" y="-76">failedTries = 0, reassign = false</label>
 			<nail x="-34" y="-59"/>
 			<nail x="-289" y="-59"/>
 		</transition>
-		<transition id="id12">
-			<source ref="id9"/>
-			<target ref="id8"/>
+		<transition id="id28">
+			<source ref="id25"/>
+			<target ref="id24"/>
 			<label kind="guard" x="-272" y="93">enteredPin != storedPin &amp;&amp; failedTries &lt; MAX_TRIES</label>
 			<label kind="synchronisation" x="-272" y="110">unlockFail!</label>
 			<label kind="assignment" x="-271" y="128">failedTries++</label>
 			<nail x="-35" y="144"/>
 			<nail x="-290" y="144"/>
 		</transition>
-		<transition id="id13">
-			<source ref="id9"/>
-			<target ref="id8"/>
+		<transition id="id29">
+			<source ref="id25"/>
+			<target ref="id24"/>
 			<label kind="guard" x="-272" y="17">enteredPin == storedPin</label>
 			<label kind="synchronisation" x="-271" y="34">unlockOk!</label>
 			<label kind="assignment" x="-271" y="51">failedTries = 0, locked = false</label>
 			<nail x="-34" y="68"/>
 			<nail x="-289" y="68"/>
 		</transition>
-		<transition id="id14">
-			<source ref="id8"/>
-			<target ref="id9"/>
+		<transition id="id30">
+			<source ref="id24"/>
+			<target ref="id25"/>
 			<label kind="guard" x="-271" y="-42">locked || reassign</label>
 			<label kind="synchronisation" x="-271" y="-25">unlockPin?</label>
 		</transition>
 	</template>
 	<template>
 		<name>Keypad</name>
-		<location id="id15" x="-357" y="-76">
+		<location id="id31" x="-357" y="-76">
 			<name x="-408" y="-93">Idle</name>
 		</location>
-		<location id="id16" x="-229" y="-76">
+		<location id="id32" x="-229" y="-76">
 			<name x="-212" y="-93">EnterPinCode</name>
 		</location>
-		<location id="id17" x="-229" y="-323">
+		<location id="id33" x="-229" y="-323">
 			<name x="-239" y="-357">ReassignPin</name>
 		</location>
-		<init ref="id15"/>
-		<transition id="id18">
-			<source ref="id17"/>
-			<target ref="id15"/>
+		<init ref="id31"/>
+		<transition id="id34">
+			<source ref="id33"/>
+			<target ref="id31"/>
 			<label kind="select" x="-561" y="-374">p: int[PIN_MIN, PIN_MAX]</label>
 			<label kind="synchronisation" x="-561" y="-357">newPinSet!</label>
 			<label kind="assignment" x="-561" y="-340">reassign = false, storedPin = p</label>
 			<nail x="-357" y="-323"/>
 		</transition>
-		<transition id="id19">
-			<source ref="id16"/>
-			<target ref="id17"/>
+		<transition id="id35">
+			<source ref="id32"/>
+			<target ref="id33"/>
 			<label kind="guard" x="-221" y="-289">reassign</label>
 			<label kind="synchronisation" x="-221" y="-272">unlockOk?</label>
 		</transition>
-		<transition id="id20">
-			<source ref="id15"/>
-			<target ref="id15"/>
+		<transition id="id36">
+			<source ref="id31"/>
+			<target ref="id31"/>
 			<label kind="synchronisation" x="-493" y="-59">setPinCode?</label>
 			<label kind="assignment" x="-518" y="-42">reassign = true</label>
 			<nail x="-382" y="-42"/>
 			<nail x="-391" y="-51"/>
 		</transition>
-		<transition id="id21">
-			<source ref="id16"/>
-			<target ref="id15"/>
+		<transition id="id37">
+			<source ref="id32"/>
+			<target ref="id31"/>
 			<label kind="synchronisation" x="-339" y="-212">unlockFail?</label>
 			<nail x="-229" y="-195"/>
 			<nail x="-357" y="-195"/>
 		</transition>
-		<transition id="id22">
-			<source ref="id16"/>
-			<target ref="id15"/>
+		<transition id="id38">
+			<source ref="id32"/>
+			<target ref="id31"/>
 			<label kind="guard" x="-339" y="-178">!reassign</label>
 			<label kind="synchronisation" x="-339" y="-161">unlockOk?</label>
 			<nail x="-229" y="-144"/>
 			<nail x="-357" y="-144"/>
 		</transition>
-		<transition id="id23">
-			<source ref="id16"/>
-			<target ref="id15"/>
+		<transition id="id39">
+			<source ref="id32"/>
+			<target ref="id31"/>
 			<label kind="synchronisation" x="-339" y="-119">intrusion?</label>
 			<nail x="-229" y="-102"/>
 			<nail x="-357" y="-102"/>
 		</transition>
-		<transition id="id24">
-			<source ref="id15"/>
-			<target ref="id16"/>
+		<transition id="id40">
+			<source ref="id31"/>
+			<target ref="id32"/>
 			<label kind="select" x="-357" y="-59">p: int[PIN_MIN, PIN_MAX]</label>
 			<label kind="guard" x="-357" y="-8">locked || reassign</label>
 			<label kind="synchronisation" x="-357" y="-42">unlockPin!</label>
@@ -204,96 +315,96 @@ carClosed = doorClosed[0] &amp;&amp; doorClosed[1]
 	<template>
 		<name>Alarm</name>
 		<declaration>clock t;</declaration>
-		<location id="id25" x="-212" y="-17">
+		<location id="id41" x="-212" y="-17">
 			<name x="-263" y="-8">Armed</name>
 		</location>
-		<location id="id26" x="-391" y="-17">
+		<location id="id42" x="-391" y="-17">
 			<name x="-434" y="-8">Idle</name>
 		</location>
-		<location id="id27" x="42" y="-17">
+		<location id="id43" x="42" y="-17">
 			<name x="8" y="-8">FlashAndSound</name>
 			<label kind="invariant" x="16" y="8">t &lt;= 30</label>
 		</location>
-		<location id="id28" x="153" y="-17">
+		<location id="id44" x="153" y="-17">
 			<name x="128" y="-8">Flash</name>
 			<label kind="invariant" x="111" y="8">t &lt;= 300</label>
 		</location>
-		<location id="id29" x="272" y="-17">
+		<location id="id45" x="272" y="-17">
 			<name x="289" y="-42">SilentAndOpen</name>
 		</location>
-		<init ref="id26"/>
-		<transition id="id30">
-			<source ref="id26"/>
-			<target ref="id27"/>
+		<init ref="id42"/>
+		<transition id="id46">
+			<source ref="id42"/>
+			<target ref="id43"/>
 			<label kind="guard" x="-373" y="8">reassign</label>
 			<label kind="synchronisation" x="-373" y="25">intrusion?</label>
 			<label kind="assignment" x="-373" y="42">reassign = false</label>
 			<nail x="-391" y="42"/>
 			<nail x="-85" y="42"/>
 		</transition>
-		<transition id="id31">
-			<source ref="id29"/>
-			<target ref="id26"/>
+		<transition id="id47">
+			<source ref="id45"/>
+			<target ref="id42"/>
 			<label kind="synchronisation" x="204" y="-144">unlockOk?</label>
 			<nail x="272" y="-127"/>
 			<nail x="-391" y="-127"/>
 		</transition>
-		<transition id="id32">
-			<source ref="id28"/>
-			<target ref="id26"/>
+		<transition id="id48">
+			<source ref="id44"/>
+			<target ref="id42"/>
 			<label kind="synchronisation" x="85" y="-144">unlockOk?</label>
 			<nail x="153" y="-127"/>
 			<nail x="-391" y="-127"/>
 		</transition>
-		<transition id="id33">
-			<source ref="id25"/>
-			<target ref="id26"/>
+		<transition id="id49">
+			<source ref="id41"/>
+			<target ref="id42"/>
 			<label kind="synchronisation" x="-314" y="-93">unlockOk?</label>
 			<nail x="-212" y="-76"/>
 			<nail x="-391" y="-76"/>
 		</transition>
-		<transition id="id34">
-			<source ref="id27"/>
-			<target ref="id26"/>
+		<transition id="id50">
+			<source ref="id43"/>
+			<target ref="id42"/>
 			<label kind="synchronisation" x="-42" y="-144">unlockOk?</label>
 			<nail x="42" y="-127"/>
 			<nail x="-391" y="-127"/>
 		</transition>
-		<transition id="id35">
-			<source ref="id25"/>
-			<target ref="id27"/>
+		<transition id="id51">
+			<source ref="id41"/>
+			<target ref="id43"/>
 			<label kind="synchronisation" x="-144" y="8">intrusion?</label>
 			<label kind="assignment" x="-187" y="-8">t = 0, armed = false</label>
 			<nail x="-93" y="-8"/>
 		</transition>
-		<transition id="id36">
-			<source ref="id29"/>
-			<target ref="id25"/>
+		<transition id="id52">
+			<source ref="id45"/>
+			<target ref="id41"/>
 			<label kind="synchronisation" x="212" y="68">close?</label>
 			<label kind="assignment" x="212" y="85">armed = true</label>
 			<nail x="272" y="68"/>
 			<nail x="-212" y="68"/>
 		</transition>
-		<transition id="id37">
-			<source ref="id28"/>
-			<target ref="id29"/>
+		<transition id="id53">
+			<source ref="id44"/>
+			<target ref="id45"/>
 			<label kind="guard" x="178" y="-51">t == 300</label>
 			<label kind="synchronisation" x="178" y="-34">silent!</label>
 		</transition>
-		<transition id="id38">
-			<source ref="id26"/>
-			<target ref="id25"/>
+		<transition id="id54">
+			<source ref="id42"/>
+			<target ref="id41"/>
 			<label kind="synchronisation" x="-331" y="-59">arm?</label>
 			<label kind="assignment" x="-355" y="-42">armed = true</label>
 		</transition>
-		<transition id="id39">
-			<source ref="id27"/>
-			<target ref="id28"/>
+		<transition id="id55">
+			<source ref="id43"/>
+			<target ref="id44"/>
 			<label kind="guard" x="59" y="-34">t == 30</label>
 		</transition>
-		<transition id="id40">
-			<source ref="id25"/>
-			<target ref="id27"/>
+		<transition id="id56">
+			<source ref="id41"/>
+			<target ref="id43"/>
 			<label kind="synchronisation" x="-110" y="-43">open?</label>
 			<label kind="assignment" x="-161" y="-59">t = 0, armed = false</label>
 			<nail x="-93" y="-25"/>
@@ -303,173 +414,215 @@ carClosed = doorClosed[0] &amp;&amp; doorClosed[1]
 		<name x="5" y="5">Car</name>
 		<declaration>// Place local declarations here.
 clock t;</declaration>
-		<location id="id41" x="-1036" y="-177">
+		<location id="id57" x="-1036" y="-177">
 			<name x="-1181" y="-195">OpenAndUnlocked</name>
 		</location>
-		<location id="id42" x="-1036" y="-84">
+		<location id="id58" x="-1036" y="-84">
 			<name x="-1164" y="-93">OpenAndLocked</name>
 		</location>
-		<location id="id43" x="-866" y="-177">
+		<location id="id59" x="-866" y="-177">
 			<name x="-866" y="-211">ClosedAndUnlocked</name>
 		</location>
-		<location id="id44" x="-866" y="-84">
+		<location id="id60" x="-866" y="-84">
 			<name x="-866" y="-75">ClosedAndLocked</name>
 			<label kind="invariant" x="-867" y="-59">t &lt;= 20</label>
 		</location>
-		<location id="id45" x="-688" y="-135">
+		<location id="id61" x="-688" y="-135">
 		</location>
-		<location id="id46" x="-476" y="-135">
+		<location id="id62" x="-476" y="-135">
 		</location>
-		<location id="id47" x="-476" y="-59">
+		<location id="id63" x="-476" y="-59">
 			<name x="-510" y="-50">SilentAndOpen</name>
 		</location>
-		<location id="id48" x="-883" y="-331">
+		<location id="id64" x="-883" y="-331">
 			<name x="-893" y="-365">SetNewPin</name>
 		</location>
-		<init ref="id41"/>
-		<transition id="id49">
-			<source ref="id44"/>
-			<target ref="id45"/>
+		<init ref="id57"/>
+		<transition id="id65">
+			<source ref="id60"/>
+			<target ref="id61"/>
 			<label kind="guard" x="-773" y="-119">t == 20</label>
 			<label kind="synchronisation" x="-773" y="-102">arm!</label>
 		</transition>
-		<transition id="id50">
-			<source ref="id44"/>
-			<target ref="id42"/>
+		<transition id="id66">
+			<source ref="id60"/>
+			<target ref="id58"/>
 			<label kind="synchronisation" x="-969" y="-76">open?</label>
 			<nail x="-952" y="-76"/>
 		</transition>
-		<transition id="id51">
-			<source ref="id42"/>
-			<target ref="id44"/>
+		<transition id="id67">
+			<source ref="id58"/>
+			<target ref="id60"/>
 			<label kind="synchronisation" x="-1009" y="-113">close?</label>
 			<label kind="assignment" x="-1011" y="-127">t = 0</label>
 			<nail x="-952" y="-93"/>
 		</transition>
-		<transition id="id52">
-			<source ref="id48"/>
-			<target ref="id41"/>
+		<transition id="id68">
+			<source ref="id64"/>
+			<target ref="id57"/>
 			<label kind="synchronisation" x="-977" y="-237">newPinSet?</label>
 			<nail x="-951" y="-246"/>
 		</transition>
-		<transition id="id53">
-			<source ref="id48"/>
-			<target ref="id46"/>
+		<transition id="id69">
+			<source ref="id64"/>
+			<target ref="id62"/>
 			<label kind="synchronisation" x="-824" y="-348">intrusion?</label>
 			<nail x="-620" y="-331"/>
 		</transition>
-		<transition id="id54">
-			<source ref="id41"/>
-			<target ref="id48"/>
+		<transition id="id70">
+			<source ref="id57"/>
+			<target ref="id64"/>
 			<label kind="synchronisation" x="-1002" y="-331">setPinCode?</label>
 			<nail x="-968" y="-263"/>
 		</transition>
-		<transition id="id55">
-			<source ref="id47"/>
-			<target ref="id45"/>
+		<transition id="id71">
+			<source ref="id63"/>
+			<target ref="id61"/>
 			<label kind="synchronisation" x="-670" y="-114">close?</label>
 		</transition>
-		<transition id="id56">
-			<source ref="id47"/>
-			<target ref="id41"/>
+		<transition id="id72">
+			<source ref="id63"/>
+			<target ref="id57"/>
 			<label kind="synchronisation" x="-501" y="-424">unlockOk?</label>
 			<nail x="-382" y="-59"/>
 			<nail x="-399" y="-399"/>
 			<nail x="-1036" y="-399"/>
 		</transition>
-		<transition id="id57">
-			<source ref="id46"/>
-			<target ref="id47"/>
+		<transition id="id73">
+			<source ref="id62"/>
+			<target ref="id63"/>
 			<label kind="synchronisation" x="-467" y="-110">silent?</label>
 		</transition>
-		<transition id="id58">
-			<source ref="id46"/>
-			<target ref="id41"/>
+		<transition id="id74">
+			<source ref="id62"/>
+			<target ref="id57"/>
 			<label kind="synchronisation" x="-646" y="-365">unlockOk?</label>
 			<nail x="-569" y="-374"/>
 			<nail x="-1036" y="-373"/>
 		</transition>
-		<transition id="id59">
-			<source ref="id45"/>
-			<target ref="id46"/>
+		<transition id="id75">
+			<source ref="id61"/>
+			<target ref="id62"/>
 			<label kind="synchronisation" x="-595" y="-161">open?</label>
 		</transition>
-		<transition id="id60">
-			<source ref="id45"/>
-			<target ref="id43"/>
+		<transition id="id76">
+			<source ref="id61"/>
+			<target ref="id59"/>
 			<label kind="synchronisation" x="-773" y="-169">unlockOk?</label>
 		</transition>
-		<transition id="id61">
-			<source ref="id44"/>
-			<target ref="id43"/>
+		<transition id="id77">
+			<source ref="id60"/>
+			<target ref="id59"/>
 			<label kind="synchronisation" x="-951" y="-144">unlockOk?</label>
 			<nail x="-875" y="-135"/>
 		</transition>
-		<transition id="id62">
-			<source ref="id43"/>
-			<target ref="id44"/>
+		<transition id="id78">
+			<source ref="id59"/>
+			<target ref="id60"/>
 			<label kind="synchronisation" x="-858" y="-144">lock?</label>
 			<label kind="assignment" x="-858" y="-135">t = 0</label>
 			<nail x="-858" y="-135"/>
 		</transition>
-		<transition id="id63">
-			<source ref="id43"/>
-			<target ref="id41"/>
+		<transition id="id79">
+			<source ref="id59"/>
+			<target ref="id57"/>
 			<label kind="synchronisation" x="-925" y="-190">open?</label>
 			<nail x="-943" y="-169"/>
 		</transition>
-		<transition id="id64">
-			<source ref="id41"/>
-			<target ref="id43"/>
+		<transition id="id80">
+			<source ref="id57"/>
+			<target ref="id59"/>
 			<label kind="synchronisation" x="-1018" y="-198">close?</label>
 			<nail x="-943" y="-186"/>
 		</transition>
-		<transition id="id65">
-			<source ref="id41"/>
-			<target ref="id42"/>
+		<transition id="id81">
+			<source ref="id57"/>
+			<target ref="id58"/>
 			<label kind="synchronisation" x="-1019" y="-143">lock?</label>
 			<nail x="-1028" y="-135"/>
 		</transition>
-		<transition id="id66">
-			<source ref="id42"/>
-			<target ref="id41"/>
+		<transition id="id82">
+			<source ref="id58"/>
+			<target ref="id57"/>
 			<label kind="synchronisation" x="-1130" y="-144">unlockOk?</label>
 			<nail x="-1045" y="-135"/>
 		</transition>
 	</template>
 	<template>
 		<name>User</name>
-		<location id="id67" x="-93" y="-25">
+		<location id="id83" x="-93" y="-25">
 			<name x="-85" y="-17">Idle</name>
 		</location>
-		<init ref="id67"/>
-		<transition id="id68">
-			<source ref="id67"/>
-			<target ref="id67"/>
+		<init ref="id83"/>
+		<transition id="id84">
+			<source ref="id83"/>
+			<target ref="id83"/>
+			<label kind="synchronisation" x="102" y="-161">unlockLuggage!</label>
+			<nail x="76" y="-161"/>
+			<nail x="195" y="-102"/>
+		</transition>
+		<transition id="id85">
+			<source ref="id83"/>
+			<target ref="id83"/>
+			<label kind="synchronisation" x="51" y="-119">lockLuggage!</label>
+			<nail x="51" y="-119"/>
+			<nail x="68" y="-93"/>
+		</transition>
+		<transition id="id86">
+			<source ref="id83"/>
+			<target ref="id83"/>
+			<label kind="synchronisation" x="-306" y="119">openLuggage!</label>
+			<nail x="-297" y="93"/>
+			<nail x="-161" y="136"/>
+		</transition>
+		<transition id="id87">
+			<source ref="id83"/>
+			<target ref="id83"/>
+			<label kind="synchronisation" x="-348" y="-195">openBonnet!</label>
+			<nail x="-238" y="-187"/>
+			<nail x="-340" y="-136"/>
+		</transition>
+		<transition id="id88">
+			<source ref="id83"/>
+			<target ref="id83"/>
+			<label kind="synchronisation" x="-246" y="59">closeLuggage!</label>
+			<nail x="-195" y="42"/>
+			<nail x="-170" y="68"/>
+		</transition>
+		<transition id="id89">
+			<source ref="id83"/>
+			<target ref="id83"/>
+			<label kind="synchronisation" x="-306" y="-144">closeBonnet!</label>
+			<nail x="-195" y="-136"/>
+			<nail x="-221" y="-119"/>
+		</transition>
+		<transition id="id90">
+			<source ref="id83"/>
+			<target ref="id83"/>
 			<label kind="guard" x="-136" y="-110">locked == false</label>
 			<label kind="synchronisation" x="-136" y="-93">setPinCode!</label>
 			<nail x="-85" y="-68"/>
 			<nail x="-102" y="-68"/>
 		</transition>
-		<transition id="id69">
-			<source ref="id67"/>
-			<target ref="id67"/>
+		<transition id="id91">
+			<source ref="id83"/>
+			<target ref="id83"/>
 			<label kind="select" x="-323" y="-42">id: int[0,NR_DOORS-1]</label>
 			<label kind="synchronisation" x="-255" y="-25">closeDoor[id]!</label>
 			<nail x="-144" y="-17"/>
 			<nail x="-144" y="-34"/>
 		</transition>
-		<transition id="id70">
-			<source ref="id67"/>
-			<target ref="id67"/>
+		<transition id="id92">
+			<source ref="id83"/>
+			<target ref="id83"/>
 			<label kind="select" x="-110" y="25">id: int[0, NR_DOORS-1]</label>
 			<label kind="synchronisation" x="-110" y="42">openDoor[id]!</label>
 			<nail x="-85" y="25"/>
 			<nail x="-102" y="25"/>
 		</transition>
-		<transition id="id71">
-			<source ref="id67"/>
-			<target ref="id67"/>
+		<transition id="id93">
+			<source ref="id83"/>
+			<target ref="id83"/>
 			<label kind="synchronisation" x="-42" y="-42">lock!</label>
 			<label kind="assignment" x="8" y="-42">locked = true</label>
 			<nail x="-42" y="-34"/>
@@ -487,10 +640,13 @@ leftFront = Door(0);
 rightFront = Door(1);
 leftBack = Door(2);
 rightBack = Door(3);
+bonnet = Bonnet();
+luggage = LuggageCompartment();
+
 doorSystem = DoorSystem();
 
 // List one or more processes to be composed into a system.
-system car, alarm, user, keypad, auth, leftFront, rightFront, leftBack, rightBack, doorSystem;</system>
+system car, alarm, user, keypad, auth, leftFront, rightFront, leftBack, rightBack, bonnet, luggage, doorSystem;</system>
 	<queries>
 		<query>
 			<formula>E&lt;&gt; car.OpenAndLocked</formula>
@@ -594,6 +750,12 @@ system car, alarm, user, keypad, auth, leftFront, rightFront, leftBack, rightBac
 			<formula>E&lt;&gt; enteredPin == storedPin</formula>
 			<comment/>
 			<result outcome="success" type="quality" timestamp="2026-01-16 18:57:30 +0100">
+			</result>
+		</query>
+		<query>
+			<formula>E&lt;&gt; armed &amp;&amp; luggage.OpenAndArmed</formula>
+			<comment/>
+			<result outcome="failure" type="quality" timestamp="2026-01-16 19:39:07 +0100">
 			</result>
 		</query>
 	</queries>
