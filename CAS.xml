@@ -35,7 +35,11 @@ broadcast chan openDoor[NR_DOORS], closeDoor[NR_DOORS];
 
 bool bonnetClosed, luggageClosed;
 chan openBonnet, closeBonnet, openLuggage, closeLuggage;
-chan unlockLuggage, lockLuggage;</declaration>
+chan unlockLuggage, lockLuggage;
+
+/* Testing */
+int __reach__ = 0;
+int __single__ = 0;</declaration>
 	<template>
 		<name>LuggageCompartment</name>
 		<location id="id0" x="-255" y="-17">
@@ -675,13 +679,16 @@ system car, alarm, user, keypad, auth, leftFront, rightFront, leftBack, rightBac
 
 /** TEST_PREFIX
 @Test
-void TEST_FILENAME() {
+void * TEST_FILENAME() {
     CarAlarmSystem sut = new CarAlarmSystem();
 */
 
 /** TEST_POSTFIX
 }
-*/</system>
+*/
+
+/** TEST_FILENAME cas_test- */
+/** TEST_FILEEXT .java */</system>
 	<queries>
 		<option key="--diagnostic" value="0"/>
 		<query>
