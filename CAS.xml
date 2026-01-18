@@ -188,7 +188,7 @@ carClosed = doorClosed[0]
 			<label kind="synchronisation" x="-119" y="17">openDoor[id]?</label>
 			<label kind="assignment" x="-119" y="34">doorClosed[id]=false,
 carClosed=false</label>
-			<label kind="testcode">sut.openDoor($(id))</label>
+			<label kind="testcode">sut.openDoor($(id));</label>
 			<nail x="-102" y="17"/>
 		</transition>
 		<transition id="id23">
@@ -436,11 +436,11 @@ clock t;</declaration>
 		</location>
 		<location id="id58" x="-1036" y="-84">
 			<name x="-1164" y="-93">OpenAndLocked</name>
-			<label kind="testcodeEnter">assertTrue(!sut.isLocked &amp;&amp; sut.isOpen);</label>
+			<label kind="testcodeEnter">assertTrue(sut.isLocked &amp;&amp; sut.isOpen);</label>
 		</location>
 		<location id="id59" x="-866" y="-177">
 			<name x="-866" y="-211">ClosedAndUnlocked</name>
-			<label kind="testcodeEnter">assertTrue(sut.isLocked &amp;&amp; sut.isOpen);</label>
+			<label kind="testcodeEnter">assertTrue(!sut.isLocked &amp;&amp; !sut.isOpen);</label>
 		</location>
 		<location id="id60" x="-866" y="-84">
 			<name x="-866" y="-75">ClosedAndLocked</name>
@@ -611,7 +611,7 @@ clock t;</declaration>
 			<source ref="id83"/>
 			<target ref="id83"/>
 			<label kind="synchronisation" x="-246" y="59">closeLuggage!</label>
-			<label kind="testcode">stu.closeLuggage();</label>
+			<label kind="testcode">sut.closeLuggage();</label>
 			<nail x="-195" y="42"/>
 			<nail x="-170" y="68"/>
 		</transition>
