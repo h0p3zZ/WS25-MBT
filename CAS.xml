@@ -679,7 +679,7 @@ system car, alarm, user, keypad, auth, leftFront, rightFront, leftBack, rightBac
 
 /** TEST_PREFIX
 @Test
-void * TEST_FILENAME() {
+void testMethod() {
     CarAlarmSystem sut = new CarAlarmSystem();
 */
 
