@@ -50,11 +50,12 @@ int __single__ = 0;</declaration>
 		</location>
 		<location id="id2" x="187" y="-17">
 			<name x="195" y="-42">ClosedAndArmed</name>
-			<label kind="testcodeEnter">assertTrue(sut.isArmed &amp;&amp; !sut.luggageOpen);</label>
+			<label kind="testcodeEnter">assertTrue(sut.isArmed() &amp;&amp; !sut.luggageOpen());</label>
 		</location>
 		<location id="id3" x="187" y="59">
 			<name x="195" y="68">OpenAndArmed</name>
-			<label kind="testcodeEnter">assertTrue(sut.isArmed &amp;&amp; sut.luggageOpen);</label>
+			<label kind="testcodeEnter">assertTrue(sut.isArmed());
+assertTrue(sut.luggageOpen());</label>
 		</location>
 		<init ref="id0"/>
 		<transition id="id4">
@@ -68,6 +69,7 @@ int __single__ = 0;</declaration>
 			<source ref="id2"/>
 			<target ref="id1"/>
 			<label kind="synchronisation" x="42" y="-8">lockLuggage?</label>
+			<label kind="testcode">sut.lockLuggage();</label>
 			<nail x="85" y="-8"/>
 		</transition>
 		<transition id="id6">
@@ -80,12 +82,14 @@ int __single__ = 0;</declaration>
 			<source ref="id3"/>
 			<target ref="id2"/>
 			<label kind="synchronisation" x="204" y="8">closeLuggage?</label>
+			<label kind="testcode">sut.closeLuggage()</label>
 			<nail x="204" y="17"/>
 		</transition>
 		<transition id="id8">
 			<source ref="id2"/>
 			<target ref="id3"/>
 			<label kind="synchronisation" x="76" y="17">openLuggage?</label>
+			<label kind="testcode">sut.openLuggage();</label>
 			<nail x="170" y="17"/>
 		</transition>
 		<transition id="id9">
@@ -93,6 +97,7 @@ int __single__ = 0;</declaration>
 			<target ref="id2"/>
 			<label kind="guard" x="34" y="-59">armed</label>
 			<label kind="synchronisation" x="34" y="-42">unlockLuggage?</label>
+			<label kind="testcode">sut.unlockLuggage();</label>
 			<nail x="85" y="-25"/>
 		</transition>
 		<transition id="id10">
@@ -242,7 +247,7 @@ carClosed = doorClosed[0] &amp;&amp; doorClosed[1]
 		<transition id="id29">
 			<source ref="id25"/>
 			<target ref="id24"/>
-			<label kind="guard" x="-272" y="17">enteredPin == storedPin</label>
+			<label kind="guard" x="-272" y="17">storedPin == enteredPin</label>
 			<label kind="synchronisation" x="-271" y="34">unlockOk!</label>
 			<label kind="assignment" x="-271" y="51">failedTries = 0, locked = false</label>
 			<nail x="-34" y="68"/>
@@ -262,10 +267,10 @@ carClosed = doorClosed[0] &amp;&amp; doorClosed[1]
 		</location>
 		<location id="id32" x="-229" y="-76">
 			<name x="-212" y="-93">EnterPinCode</name>
+			<label kind="testcodeEnter">sut.unlockVehicle($(enteredPin));</label>
 		</location>
 		<location id="id33" x="-229" y="-323">
 			<name x="-239" y="-357">ReassignPin</name>
-			<label kind="testcodeEnter">// ReassignPin enter</label>
 			<label kind="testcodeExit">// ReassignPin exit</label>
 		</location>
 		<init ref="id31"/>
@@ -275,7 +280,7 @@ carClosed = doorClosed[0] &amp;&amp; doorClosed[1]
 			<label kind="select" x="-561" y="-374">p: int[PIN_MIN, PIN_MAX]</label>
 			<label kind="synchronisation" x="-561" y="-357">newPinSet!</label>
 			<label kind="assignment" x="-561" y="-340">reassign = false, storedPin = p</label>
-			<label kind="testcode">sut.setPinCode(enteredPin, p)</label>
+			<label kind="testcode">sut.setPinCode(($enteredPin), $(p))</label>
 			<nail x="-357" y="-323"/>
 		</transition>
 		<transition id="id35">
@@ -283,6 +288,7 @@ carClosed = doorClosed[0] &amp;&amp; doorClosed[1]
 			<target ref="id33"/>
 			<label kind="guard" x="-221" y="-289">reassign</label>
 			<label kind="synchronisation" x="-221" y="-272">unlockOk?</label>
+			<label kind="testcode">// unlockOk</label>
 		</transition>
 		<transition id="id36">
 			<source ref="id31"/>
@@ -296,6 +302,7 @@ carClosed = doorClosed[0] &amp;&amp; doorClosed[1]
 			<source ref="id32"/>
 			<target ref="id31"/>
 			<label kind="synchronisation" x="-339" y="-212">unlockFail?</label>
+			<label kind="testcode">assertTrue(sut.isLocked());</label>
 			<nail x="-229" y="-195"/>
 			<nail x="-357" y="-195"/>
 		</transition>
@@ -304,6 +311,7 @@ carClosed = doorClosed[0] &amp;&amp; doorClosed[1]
 			<target ref="id31"/>
 			<label kind="guard" x="-339" y="-178">!reassign</label>
 			<label kind="synchronisation" x="-339" y="-161">unlockOk?</label>
+			<label kind="testcode">assertFalse(sut.isLocked());</label>
 			<nail x="-229" y="-144"/>
 			<nail x="-357" y="-144"/>
 		</transition>
@@ -311,6 +319,7 @@ carClosed = doorClosed[0] &amp;&amp; doorClosed[1]
 			<source ref="id32"/>
 			<target ref="id31"/>
 			<label kind="synchronisation" x="-339" y="-119">intrusion?</label>
+			<label kind="testcode">assertTrue(sut.isLocked());</label>
 			<nail x="-229" y="-102"/>
 			<nail x="-357" y="-102"/>
 		</transition>
@@ -321,7 +330,6 @@ carClosed = doorClosed[0] &amp;&amp; doorClosed[1]
 			<label kind="guard" x="-357" y="-8">locked || reassign</label>
 			<label kind="synchronisation" x="-357" y="-42">unlockPin!</label>
 			<label kind="assignment" x="-357" y="-25">enteredPin = p</label>
-			<label kind="testcode">sut.unlockVehicle($(enteredPin));</label>
 		</transition>
 	</template>
 	<template>
@@ -329,7 +337,7 @@ carClosed = doorClosed[0] &amp;&amp; doorClosed[1]
 		<declaration>clock t;</declaration>
 		<location id="id41" x="-212" y="-17">
 			<name x="-263" y="-8">Armed</name>
-			<label kind="testcodeEnter">assertTrue(sut.isArmed);</label>
+			<label kind="testcodeEnter">assertTrue(sut.isArmed());</label>
 		</location>
 		<location id="id42" x="-391" y="-17">
 			<name x="-434" y="-8">Idle</name>
@@ -337,12 +345,12 @@ carClosed = doorClosed[0] &amp;&amp; doorClosed[1]
 		<location id="id43" x="42" y="-17">
 			<name x="8" y="-8">FlashAndSound</name>
 			<label kind="invariant" x="16" y="8">t &lt;= 30</label>
-			<label kind="testcodeEnter">assertAreEqual(sut.state, "FlashAndsound");</label>
+			<label kind="testcodeEnter">assertEquals(sut.state, "FlashAndsound");</label>
 		</location>
 		<location id="id44" x="153" y="-17">
 			<name x="128" y="-8">Flash</name>
 			<label kind="invariant" x="111" y="8">t &lt;= 300</label>
-			<label kind="testcodeEnter">assertAreEqual(sut.state, "Flash");</label>
+			<label kind="testcodeEnter">assertEquals(sut.state, "Flash");</label>
 		</location>
 		<location id="id45" x="272" y="-17">
 			<name x="289" y="-42">SilentAndOpen</name>
@@ -432,20 +440,20 @@ carClosed = doorClosed[0] &amp;&amp; doorClosed[1]
 clock t;</declaration>
 		<location id="id57" x="-1036" y="-177">
 			<name x="-1181" y="-195">OpenAndUnlocked</name>
-			<label kind="testcodeEnter">assertTrue(!sut.isLocked &amp;&amp; sut.isOpen);</label>
+			<label kind="testcodeEnter">assertTrue(!sut.isLocked() &amp;&amp; sut.isOpen());</label>
 		</location>
 		<location id="id58" x="-1036" y="-84">
 			<name x="-1164" y="-93">OpenAndLocked</name>
-			<label kind="testcodeEnter">assertTrue(sut.isLocked &amp;&amp; sut.isOpen);</label>
+			<label kind="testcodeEnter">assertTrue(sut.isLocked() &amp;&amp; sut.isOpen());</label>
 		</location>
 		<location id="id59" x="-866" y="-177">
 			<name x="-866" y="-211">ClosedAndUnlocked</name>
-			<label kind="testcodeEnter">assertTrue(!sut.isLocked &amp;&amp; !sut.isOpen);</label>
+			<label kind="testcodeEnter">assertTrue(!sut.isLocked() &amp;&amp; !sut.isOpen());</label>
 		</location>
 		<location id="id60" x="-866" y="-84">
 			<name x="-866" y="-75">ClosedAndLocked</name>
 			<label kind="invariant" x="-867" y="-59">t &lt;= 20</label>
-			<label kind="testcodeEnter">assertTrue(sut.isLocked &amp;&amp; !sut.isOpen);</label>
+			<label kind="testcodeEnter">assertTrue(sut.isLocked() &amp;&amp; !sut.isOpen());</label>
 		</location>
 		<location id="id61" x="-688" y="-135">
 		</location>
@@ -579,7 +587,6 @@ clock t;</declaration>
 			<source ref="id83"/>
 			<target ref="id83"/>
 			<label kind="synchronisation" x="102" y="-161">unlockLuggage!</label>
-			<label kind="testcode">sut.unlockLuggage();</label>
 			<nail x="76" y="-161"/>
 			<nail x="195" y="-102"/>
 		</transition>
@@ -587,7 +594,6 @@ clock t;</declaration>
 			<source ref="id83"/>
 			<target ref="id83"/>
 			<label kind="synchronisation" x="51" y="-119">lockLuggage!</label>
-			<label kind="testcode">sut.lockLuggage();</label>
 			<nail x="51" y="-119"/>
 			<nail x="68" y="-93"/>
 		</transition>
@@ -595,7 +601,6 @@ clock t;</declaration>
 			<source ref="id83"/>
 			<target ref="id83"/>
 			<label kind="synchronisation" x="-306" y="119">openLuggage!</label>
-			<label kind="testcode">sut.openLuggage();</label>
 			<nail x="-297" y="93"/>
 			<nail x="-161" y="136"/>
 		</transition>
@@ -611,7 +616,6 @@ clock t;</declaration>
 			<source ref="id83"/>
 			<target ref="id83"/>
 			<label kind="synchronisation" x="-246" y="59">closeLuggage!</label>
-			<label kind="testcode">sut.closeLuggage();</label>
 			<nail x="-195" y="42"/>
 			<nail x="-170" y="68"/>
 		</transition>
@@ -799,7 +803,15 @@ void testMethod() {
 		<query>
 			<formula>E&lt;&gt; armed &amp;&amp; luggage.OpenAndArmed</formula>
 			<comment/>
-			<result outcome="failure" type="quality" timestamp="2026-01-16 19:39:07 +0100">
+			<result outcome="success" type="quality" timestamp="2026-01-20 19:23:35 +0100">
+				<option key="--diagnostic" value="0"/>
+			</result>
+		</query>
+		<query>
+			<formula>E&lt;&gt; keypad.ReassignPin</formula>
+			<comment/>
+			<result outcome="success" type="quality" timestamp="2026-01-20 19:36:41 +0100">
+				<option key="--diagnostic" value="0"/>
 			</result>
 		</query>
 	</queries>
