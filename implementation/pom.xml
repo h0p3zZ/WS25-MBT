@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.example</groupId>
+    <artifactId>ModelBasedTesting</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <!-- =========================
+       === Java Configuration ===
+       ========================= -->
+    <properties>
+        <maven.compiler.release>17</maven.compiler.release>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <junit.jupiter.version>5.10.2</junit.jupiter.version>
+        <pitest.version>1.16.1</pitest.version>
+        <pitest.junit5.version>1.2.1</pitest.junit5.version>
+    </properties>
+
+    <!-- ======================
+         === Dependencies ===
+         ====================== -->
+    <dependencies>
+
+        <!-- JUnit 5 -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${junit.jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
+    <!-- ======================
+         === Build Plugins ===
+         ====================== -->
+    <build>
+        <plugins>
+
+            <!-- Compiler Plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.12.1</version>
+                <configuration>
+                    <release>${maven.compiler.release}</release>
+                </configuration>
+            </plugin>
+
+            <!-- Surefire (JUnit 5) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
+                <configuration>
+                    <useModulePath>false</useModulePath>
+                </configuration>
+            </plugin>
+
+            <!-- PIT Mutation Testing -->
+            <plugin>
+                <groupId>org.pitest</groupId>
+                <artifactId>pitest-maven</artifactId>
+                <version>${pitest.version}</version>
+
+                <configuration>
+                    <!-- Adjust package if desired, e.g. alarm.* -->
+                    <targetClasses>
+                        <param>alarm.*</param>
+                    </targetClasses>
+
+                    <targetTests>
+                        <param>alarm.*Test</param>
+                    </targetTests>
+
+                    <outputFormats>
+                        <param>HTML</param>
+                        <param>XML</param>
+                    </outputFormats>
+
+                    <threads>4</threads>
+                    <timestampedReports>false</timestampedReports>
+                    <failWhenNoMutations>false</failWhenNoMutations>
+                </configuration>
+
+                <dependencies>
+                    <dependency>
+                        <groupId>org.pitest</groupId>
+                        <artifactId>pitest-junit5-plugin</artifactId>
+                        <version>${pitest.junit5.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+
+        </plugins>
+    </build>
+
+</project>
