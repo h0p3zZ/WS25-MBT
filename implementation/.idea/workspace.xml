@@ -6,6 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="bc9d1371-5328-406e-ac48-1856da8cba43" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/pit-reports/alarm/CarAlarmSystem.java.html" beforeDir="false" afterPath="$PROJECT_DIR$/target/pit-reports/alarm/CarAlarmSystem.java.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/pit-reports/mutations.xml" beforeDir="false" afterPath="$PROJECT_DIR$/target/pit-reports/mutations.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -32,6 +34,10 @@
     "git-widget-placeholder": "dev",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
     "vue.rearranger.settings.migration": "true"
   }
@@ -52,7 +58,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1769115910435</updated>
-      <workItem from="1769115911682" duration="228000" />
+      <workItem from="1769115911682" duration="348000" />
     </task>
     <servers />
   </component>
